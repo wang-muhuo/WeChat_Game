@@ -12,6 +12,7 @@ export default class Sprite {
     this.x = x
     this.y = y
 
+    this.useStaticImg = true
     this.visible = true
   }
 
@@ -19,7 +20,7 @@ export default class Sprite {
    * 将精灵图绘制在canvas上
    */
   drawToCanvas(ctx) {
-    if ( !this.visible )
+    if (!this.useStaticImg )
       return
 
     ctx.drawImage(

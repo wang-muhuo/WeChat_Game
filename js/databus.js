@@ -36,6 +36,7 @@ export default class DataBus {
   removeEnemey(enemy) {
     let temp = this.enemys.shift()
 
+    temp.useStaticImg = false  //IMPROVE
     temp.visible = false
 
     this.pool.recover('enemy', enemy)
@@ -44,6 +45,7 @@ export default class DataBus {
   removeScanner(scanner) {
     let temp = this.scanners.shift()
 
+    temp.useStaticImg = false  //IMPROVE
     temp.visible = false
 
     this.pool.recover('scanner', scanner)
@@ -52,6 +54,7 @@ export default class DataBus {
   removeFlotage(flotage) {
     let temp = this.flotages.shift()
 
+    temp.useStaticImg = false  //IMPROVE
     temp.visible = false
 
     this.pool.recover('flotage', flotage)
@@ -63,6 +66,7 @@ export default class DataBus {
   removeBullets(bullet) {
     let temp = this.bullets.shift()
 
+    temp.useStaticImg = false  //IMPROVE
     temp.visible = false
 
     this.pool.recover('bullet', bullet)

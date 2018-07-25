@@ -18,6 +18,7 @@ function rnd(start, end){
 export default class Enemy extends Animation {
   constructor() {
     super(ENEMY_IMG_SRC, ENEMY_WIDTH, ENEMY_HEIGHT)
+
     this.initExplosionAnimation()
   }
 
@@ -27,6 +28,7 @@ export default class Enemy extends Animation {
 
     this[__.speed] = speed
 
+    this.useStaticImg = true
     this.visible = true
   }
 

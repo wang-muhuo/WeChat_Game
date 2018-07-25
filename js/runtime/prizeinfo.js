@@ -59,8 +59,8 @@ export default class PrizeInfo {
     )
 
     ctx.fillText(
-      '关闭',
-      screenWidth / 2 - 20,
+      '继续游戏',
+      screenWidth / 2 - 40,
       screenHeight / 2 - 100 + 205
     )
 

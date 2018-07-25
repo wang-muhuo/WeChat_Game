@@ -1,7 +1,7 @@
 import Animation from '../base/animation'
 import DataBus from '../databus'
 
-const ENEMY_IMG_SRC = 'images/1.png'
+const ENEMY_IMG_SRC = 'images/scanner1.png'
 const ENEMY_WIDTH = 60
 const ENEMY_HEIGHT = 60
 
@@ -19,6 +19,7 @@ export default class Flotage extends Animation {
   constructor() {
     super(ENEMY_IMG_SRC, ENEMY_WIDTH, ENEMY_HEIGHT)
 
+    // this.visible = false
     this.initExplosionAnimation()
   }
 

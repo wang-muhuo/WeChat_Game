@@ -22,6 +22,7 @@ export default class Bullet extends Sprite {
 
     this[__.speed] = speed
 
+    this.useStaticImg = true  //IMPROVE
     this.visible = true
   }
 

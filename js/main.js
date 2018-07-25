@@ -1,6 +1,7 @@
 import Player from './player/index'
 import Enemy from './npc/enemy'
 import Scanner from './npc/scanner'
+import Flotage from './npc/flotage'
 import BackGround from './runtime/background'
 import GameInfo from './runtime/gameinfo'
 import PrizeInfo from './runtime/prizeinfo'
@@ -27,6 +28,7 @@ export default class Main {
       'touchstart',
       this.touchHandler
     )
+    canvas.removeEventListener('touchcontinue', this.continueHandler)
 
     this.bg = new BackGround(ctx)
     this.player = new Player(ctx)
@@ -35,6 +37,7 @@ export default class Main {
     this.prizeinfo=new PrizeInfo()
     this.bindLoop = this.loop.bind(this)
     this.hasEventBind = false
+    this.continue = true
 
     // 清除上一局的动画
     window.cancelAnimationFrame(this.aniId);
@@ -55,14 +58,11 @@ export default class Main {
       enemy.init(6)
       databus.enemys.push(enemy)
     }
-      else if (databus.frame % 50 === 0) {
-        let scanner = databus.pool.getItemByClass('scanner', Scanner)
-        scanner.init(2)
-        scanner.playAnimation(0,  true)
-        databus.scanners.push(scanner)
-      }
-
-    
+    else if (databus.frame % 50 === 0) {
+      let scanner = databus.pool.getItemByClass('scanner', Scanner)
+      scanner.init(2)
+      databus.scanners.push(scanner)
+    }
   }
 
 
@@ -78,26 +78,13 @@ export default class Main {
           enemy.playAnimation()
           that.music.playExplosion()
 
+          bullet.useStaticImg = false  //IMPROVE
           bullet.visible = false
           databus.score += 1
 
           break
         }
       }
-
-      // for (let i = 0, il = databus.scanners.length; i < il; i++) {
-      //   let scanner = databus.scanners[i]
-
-      //   if (!scanner.isPlaying && scanner.isCollideWith(bullet)) {
-      //     scanner.playAnimation()
-      //     that.music.playExplosion()
-
-      //     bullet.visible = false
-      //     databus.score += 1
-
-      //     break
-      //   }
-      // }
 
     })
 
@@ -130,13 +117,38 @@ export default class Main {
     let y = e.touches[0].clientY
 
     let area = this.gameinfo.btnArea
-
     if (x >= area.startX
       && x <= area.endX
       && y >= area.startY
       && y <= area.endY)
       this.restart()
+
+      
   }
+
+//游戏暂停时触摸关闭按钮和京东折扣券的处理逻辑
+
+  continueTouchEventHandler(e){
+    e.preventDefault()
+
+    let x = e.touches[0].clientX
+    let y = e.touches[0].clientY
+    let area = this.prizeinfo.btnArea
+
+    if (x >= area.startX
+      && x <= area.endX
+      && y >= area.startY
+      && y <= area.endY)
+      // this.restart()
+      // this.aniId = window.requestAnimationFrame(
+      //   this.bindLoop,
+      //   canvas
+      // )
+      this.continue = true
+  }
+
+
+
 
   /**
    * canvas重绘函数
@@ -159,6 +171,12 @@ export default class Main {
         item.drawToCanvas(ctx)
       })
 
+    databus.bullets
+      .concat(databus.flotages)
+      .forEach((item) => {
+        item.drawToCanvas(ctx)
+      })
+
     this.player.drawToCanvas(ctx)
 
     databus.animations.forEach((ani) => {
@@ -172,13 +190,12 @@ export default class Main {
     // 游戏结束停止帧循环
     if (databus.gameOver) {
       this.gameinfo.renderGameOver(ctx, databus.score)
-      
-      //重新开始按钮
-      if (!this.hasEventBind) {
+
+       if (!this.hasEventBind) {
         this.hasEventBind = true
-        this.touchHandler = this.touchEventHandler.bind(this)
-        canvas.addEventListener('touchstart', this.touchHandler)
-      }
+         this.touchHandler = this.touchEventHandler.bind(this)
+         canvas.addEventListener('touchstart', this.touchHandler)
+       }
     }
 
     // 游戏暂停
@@ -186,17 +203,22 @@ export default class Main {
      
      this.prizeinfo.renderPrizeInfo(ctx)
      
-      // if (!this.hasEventBind) {
-      //   this.hasEventBind = true
-      //   this.touchHandler = this.touchEventHandler.bind(this)
-      //   canvas.addEventListener('touchstart', this.touchHandler)
-      // }
+
+       if (!this.hasEventBind) {
+         this.hasEventBind = true
+         this.continueHandler = this.continueTouchEventHandler.bind(this)
+         canvas.addEventListener('touchstart', this.continueHandler)
+         
+       }
     }
   }
 
   // 游戏逻辑更新主函数
   update() {
     if (databus.gameOver)
+      return;
+
+    if (databus.prizeInfo)
       return;
 
     this.bg.update()
@@ -209,6 +231,12 @@ export default class Main {
 
     databus.bullets
       .concat(databus.scanners)
+      .forEach((item) => {
+        item.update()
+      })
+
+    databus.bullets
+      .concat(databus.flotages)
       .forEach((item) => {
         item.update()
       })
